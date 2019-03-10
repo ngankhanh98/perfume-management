@@ -48,7 +48,7 @@ namespace perfume_management
             DataTable table = new DataTable();
             adapter.Fill(table);
             datagrid_Items.DataContext = table.DefaultView;
-            datagrid_Items.CanUserAddRows = false;
+            //datagrid_Items.CanUserAddRows = false;
         }
 
         private void Button_Add_Click(object sender, RoutedEventArgs e)
@@ -107,15 +107,39 @@ namespace perfume_management
 
         private void Button_Save_Click(object sender, RoutedEventArgs e)
         {
+
             SqlCommandBuilder builder = new SqlCommandBuilder(adapter);
             adapter.UpdateCommand = builder.GetUpdateCommand();
-            DataTable table = ((DataView)datagrid_Items.ItemsSource).ToTable();
+
+            
 
             DataSet dataSet = new DataSet();
+            DataTable table = ((DataView)datagrid_Items.ItemsSource).ToTable();
+            //table = table.GetChanges();
+            //table.AcceptChanges();
             dataSet.Tables.Add(table);
+            //adapter.Fill(dataSet.Tables[0]);
+            //adapter.Fill(table);
 
+            adapter.TableMappings.Add("PERFUME", "dataSet");
+
+            //adapter.AcceptChangesDuringUpdate = true;
+
+
+            //DataTable categoryTable = new DataTable();
+            //adapter.Fill(categoryTable);
+            dataSet.EndInit();
+            //adapter.Update(dataSet, "PERFUME");
             adapter.Update(dataSet);
+            //table.AcceptChanges();
+            //conn.Close();
+            //adapter.Update(/*categoryTable*/);
+            adapter.Dispose();
+            conn.Dispose();
             LoadData();
+            ///
+
+
         }
 
         private void Button_Del_Click(object sender, RoutedEventArgs e)
@@ -133,5 +157,6 @@ namespace perfume_management
             LoadData();
 
         }
+
     }
 }

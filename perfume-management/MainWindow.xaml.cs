@@ -29,6 +29,11 @@ namespace perfume_management
 
         private void Button_Load_Click(object sender, RoutedEventArgs e)
         {
+            LoadData();
+        }
+
+        private void LoadData()
+        {
             string path = @"Data Source=.\SQLEXPRESS;Initial Catalog=Perfume;Integrated Security=True";
             SqlConnection conn = new SqlConnection(path);
 
@@ -38,6 +43,33 @@ namespace perfume_management
             DataTable table = new DataTable();
             adapter.Fill(table);
             datagrid_Items.DataContext = table.DefaultView;
+            datagrid_Items.CanUserAddRows = false;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            AddUpdate addUpdate = new AddUpdate();
+            addUpdate.OnUpdate += AddUpdate_OnUpdate;
+            addUpdate.ShowDialog();
+        }
+
+        private void AddUpdate_OnUpdate(Item item)
+        {
+            string path = @"Data Source=.\SQLEXPRESS;Initial Catalog=Perfume;Integrated Security=True";
+            SqlConnection conn = new SqlConnection(path);
+            conn.Open();
+
+            string cmdstring = String.Format("INSERT INTO PERFUME VALUES('{0}','{1}','{2}','{3}')",item.name, item.volume, item.price, item.brand);
+            SqlCommand command = new SqlCommand(cmdstring, conn);
+            command.ExecuteNonQuery();
+            conn.Close();
+
+            LoadData();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

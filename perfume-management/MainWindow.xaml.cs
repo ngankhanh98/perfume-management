@@ -22,6 +22,9 @@ namespace perfume_management
     /// </summary>
     public partial class MainWindow : Window
     {
+        public string path = @"Data Source=.\SQLEXPRESS;Initial Catalog=Perfume;Integrated Security=True";
+        public string query, cmdstring;
+        SqlConnection conn;
         public MainWindow()
         {
             InitializeComponent();
@@ -34,10 +37,10 @@ namespace perfume_management
 
         private void LoadData()
         {
-            string path = @"Data Source=.\SQLEXPRESS;Initial Catalog=Perfume;Integrated Security=True";
-            SqlConnection conn = new SqlConnection(path);
 
-            string query = @"SELECT * FROM PERFUME";
+            conn = new SqlConnection(path);
+
+            query = @"SELECT * FROM PERFUME";
             SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
 
             DataTable table = new DataTable();
@@ -46,20 +49,38 @@ namespace perfume_management
             datagrid_Items.CanUserAddRows = false;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
-            AddUpdate addUpdate = new AddUpdate();
-            addUpdate.OnUpdate += AddUpdate_OnUpdate;
+            DataRowView row = datagrid_Items.SelectedItem as DataRowView;
+            AddUpdate addUpdate;
+
+
+            if (row != null)
+            {
+                Item item = new Item();
+                item.id = int.Parse(row.Row.ItemArray[0].ToString());
+                item.name = row.Row.ItemArray[1].ToString();
+                item.volume = int.Parse(row.Row.ItemArray[2].ToString());
+                item.price = int.Parse(row.Row.ItemArray[3].ToString());
+                item.brand = row.Row.ItemArray[4].ToString();
+                addUpdate = new AddUpdate(item);
+                addUpdate.OnUpdate += AddUpdate_OnUpdate;
+            }
+            else
+            {
+                 addUpdate = new AddUpdate();
+                addUpdate.OnUpdate += AddUpdate_OnAddNew;
+            }
+            
             addUpdate.ShowDialog();
         }
 
         private void AddUpdate_OnUpdate(Item item)
         {
-            string path = @"Data Source=.\SQLEXPRESS;Initial Catalog=Perfume;Integrated Security=True";
-            SqlConnection conn = new SqlConnection(path);
+            conn = new SqlConnection(path);
             conn.Open();
 
-            string cmdstring = String.Format("INSERT INTO PERFUME VALUES('{0}','{1}','{2}','{3}')",item.name, item.volume, item.price, item.brand);
+            cmdstring = String.Format("UPDATE PERFUME SET ITEM = '{0}', VOLUME = '{1}', PRICE = '{2}', BRAND = '{3}' WHERE ID = '{4}'", item.name, item.volume, item.price, item.brand, item.id);
             SqlCommand command = new SqlCommand(cmdstring, conn);
             command.ExecuteNonQuery();
             conn.Close();
@@ -67,8 +88,33 @@ namespace perfume_management
             LoadData();
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void AddUpdate_OnAddNew(Item item)
         {
+
+            conn = new SqlConnection(path);
+            conn.Open();
+
+            cmdstring = String.Format("INSERT INTO PERFUME VALUES('{0}','{1}','{2}','{3}')", item.name, item.volume, item.price, item.brand);
+            SqlCommand command = new SqlCommand(cmdstring, conn);
+            command.ExecuteNonQuery();
+            conn.Close();
+
+            LoadData();
+        }
+
+        private void Button_Del_Click(object sender, RoutedEventArgs e)
+        {
+            DataRowView row = datagrid_Items.SelectedItem as DataRowView;
+            int id = int.Parse(row.Row.ItemArray[0].ToString());
+
+
+            cmdstring = String.Format("DELETE FROM PERFUME WHERE ID = '{0}'", id);
+            conn.Open();
+            SqlCommand command = new SqlCommand(cmdstring, conn);
+            command.ExecuteNonQuery();
+            conn.Close();
+
+            LoadData();
 
         }
     }

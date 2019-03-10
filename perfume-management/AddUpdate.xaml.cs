@@ -21,10 +21,20 @@ namespace perfume_management
     {
         public delegate void DataChange(Item item);
         public event DataChange OnUpdate = null;
-
+        public int id = 0;
         public AddUpdate()
         {
             InitializeComponent();
+        }
+
+        public AddUpdate(Item item)
+        {
+            InitializeComponent();
+            id = item.id;
+            txt_Name.Text = item.name;
+            txt_Volume.Text = item.volume.ToString();
+            txt_Price.Text = item.price.ToString();
+            txt_Brand.Text = item.brand;
         }
 
         private void Button_Add_Click(object sender, RoutedEventArgs e)
@@ -38,7 +48,7 @@ namespace perfume_management
         private Item GetItemInfor()
         {
             Item item = new Item();
-
+            item.id = id;
             item.name = txt_Name.Text;
             item.volume = int.Parse(txt_Volume.Text);
             item.price = int.Parse(txt_Price.Text);

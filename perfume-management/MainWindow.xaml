@@ -9,8 +9,8 @@
     <Grid>
         <Button Name="button_Load" Content="LOAD ITEMS" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="30,30,0,0" Click="Button_Load_Click"/>
         <Button Name="button_Add" Content="ADD ITEM" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="160,30,0,0" Click="Button_Add_Click"/>
-        <Button Name="button_Del" Content="DELETE" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="445,30,0,0" Click="Button_Del_Click"/>
-        <Button Content="Button" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="297,30,0,0"/>
+        <Button Name="button_Del" Content="DELETE ITEM" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="445,30,0,0" Click="Button_Del_Click"/>
+        <Button Name="button_Save" Content="SAVE ITEM" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="297,30,0,0" Click="Button_Save_Click"/>
         <DataGrid Name="datagrid_Items" ItemsSource="{Binding}" Margin="30,70,30,30"/>
 
     </Grid>

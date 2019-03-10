@@ -25,6 +25,8 @@ namespace perfume_management
         public string path = @"Data Source=.\SQLEXPRESS;Initial Catalog=Perfume;Integrated Security=True";
         public string query, cmdstring;
         SqlConnection conn;
+        SqlDataAdapter adapter;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -41,7 +43,7 @@ namespace perfume_management
             conn = new SqlConnection(path);
 
             query = @"SELECT * FROM PERFUME";
-            SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
+            adapter = new SqlDataAdapter(query, conn);
 
             DataTable table = new DataTable();
             adapter.Fill(table);
@@ -65,6 +67,7 @@ namespace perfume_management
                 item.brand = row.Row.ItemArray[4].ToString();
                 addUpdate = new AddUpdate(item);
                 addUpdate.OnUpdate += AddUpdate_OnUpdate;
+                row = null;
             }
             else
             {
@@ -99,6 +102,19 @@ namespace perfume_management
             command.ExecuteNonQuery();
             conn.Close();
 
+            LoadData();
+        }
+
+        private void Button_Save_Click(object sender, RoutedEventArgs e)
+        {
+            SqlCommandBuilder builder = new SqlCommandBuilder(adapter);
+            adapter.UpdateCommand = builder.GetUpdateCommand();
+            DataTable table = ((DataView)datagrid_Items.ItemsSource).ToTable();
+
+            DataSet dataSet = new DataSet();
+            dataSet.Tables.Add(table);
+
+            adapter.Update(dataSet);
             LoadData();
         }
 
